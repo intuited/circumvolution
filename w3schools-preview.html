@@ -3,55 +3,26 @@
 <body> 
 
 <div style="text-align:center"> 
-  <button id="playpause" onclick="playPause()">PLAY</button> 
-  <button onclick="makeBig()">Big</button>
-  <button onclick="makeSmall()">Small</button>
-  <button onclick="makeNormal()">Normal</button>
-  <button onclick="seek(30)">Seek to 30 seconds</button>
+  <button id="playbutton">PLAY</button> 
+  <button id="seekbutton">Seek to 30 seconds</button>
+  <button id="loopbutton">Loop</button> from <input type="text" id="loopstart"> to <input type="text" id="loopend">
   <br> 
-  <video id="video1" width="420">
-    <source src="http://www.youtubeinmp4.com/redirect.php?video=2Tjp0mRb4XA" type="video/mp4">
-    <source src="mov_bbb.ogg" type="video/ogg">
+  <video id="video" width="420">
+    <!-- <source src="http://www.youtubeinmp4.com/redirect.php?video=2Tjp0mRb4XA" type="video/mp4"> --!>
+    <source src="Acropedia Teacher Training Prereqs.mp4" type="video/mp4">
     Your browser does not support HTML5 video.
   </video>
 </div> 
 
-<script> 
-var myVideo = document.getElementById("video1"); 
+<script src="view.js"></script> 
+<script>
+var view = new View(document.getElementById("playbutton"),
+                    document.getElementById("seekbutton"),
+                    document.getElementById("loopbutton"),
+                    document.getElementById("loopstart"),
+                    document.getElementById("loopend"),
+                    document.getElementById("video") )
+</script>
 
-function makeLoop(start, end) {
-    myVideo.ontimeupdate = function() {
-        if (this.currentTime >= end) this.currentTime = start;
-    }
-}
-
-function seek(time) {
-    myVideo.currentTime=time;
-}
-
-function playPause() { 
-    if (myVideo.paused) {
-        myVideo.play(); 
-        document.getElementById("playpause").innerText = "PAUSE";
-    } else {
-        myVideo.pause(); 
-        document.getElementById("playpause").innerText = "PLAY";
-    }
-} 
-
-function makeBig() { 
-    myVideo.width = 560; 
-} 
-
-function makeSmall() { 
-    myVideo.width = 320; 
-} 
-
-function makeNormal() { 
-    myVideo.width = 420; 
-} 
-</script> 
-
-<p>Video courtesy of <a href="http://www.bigbuckbunny.org/" target="_blank">Big Buck Bunny</a>.</p>
 </body> 
 </html>
