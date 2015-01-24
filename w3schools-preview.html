@@ -20,6 +20,12 @@
 <script> 
 var myVideo = document.getElementById("video1"); 
 
+function makeLoop(start, end) {
+    myVideo.ontimeupdate = function() {
+        if (this.currentTime >= end) this.currentTime = start;
+    }
+}
+
 function seek(time) {
     myVideo.currentTime=time;
 }
