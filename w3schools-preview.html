@@ -6,6 +6,7 @@
   <button id="playbutton">PLAY</button> 
   <button id="seekbutton">Seek to 30 seconds</button>
   <button id="loopbutton">Loop</button> from <input type="text" id="loopstart"> to <input type="text" id="loopend">
+  Playback speed: <input type="text" id="speedinput" value="1.0">
   <br> 
   <video id="video" width="420">
     <!-- <source src="http://www.youtubeinmp4.com/redirect.php?video=2Tjp0mRb4XA" type="video/mp4"> --!>
@@ -21,6 +22,7 @@ var view = new View(document.getElementById("playbutton"),
                     document.getElementById("loopbutton"),
                     document.getElementById("loopstart"),
                     document.getElementById("loopend"),
+                    document.getElementById("speedinput"),
                     document.getElementById("video") )
 </script>
 

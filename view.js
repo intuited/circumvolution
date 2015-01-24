@@ -6,12 +6,14 @@
     */
 function View(playButton, seekButton,
               loopButton, loopStartInput, loopEndInput,
+              speedInput,
               video) {
     this.playButton = playButton;
     this.seekButton = seekButton;
     this.loopButton = loopButton;
     this.loopStartInput = loopStartInput;
     this.loopEndInput = loopEndInput;
+    this.speedInput = speedInput;
     this.video = video;
 
     this.loop = {
@@ -55,6 +57,10 @@ function View(playButton, seekButton,
         }
     };
 
+    this.speedInput.onchange = function () {
+        view.setPlaybackSpeed(view.speedInput.value);
+    }
+
     // underlying behaviour
     this.seek = function (time) {
         this.video.currentTime = time;
@@ -70,5 +76,9 @@ function View(playButton, seekButton,
         this.loop.active = false;
         this.loop.start = null;
         this.loop.end = null;
+    };
+
+    this.setPlaybackSpeed = function (playbackSpeed) {
+        this.video.playbackRate = playbackSpeed;
     };
 }
