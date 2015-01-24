@@ -3,7 +3,7 @@
 <body> 
 
 <div style="text-align:center"> 
-  <button onclick="playPause()">Play/Pause</button> 
+  <button id="playpause" onclick="playPause()">PLAY</button> 
   <button onclick="makeBig()">Big</button>
   <button onclick="makeSmall()">Small</button>
   <button onclick="makeNormal()">Normal</button>
@@ -25,10 +25,13 @@ function seek(time) {
 }
 
 function playPause() { 
-    if (myVideo.paused) 
+    if (myVideo.paused) {
         myVideo.play(); 
-    else 
+        document.getElementById("playpause").innerText = "PAUSE";
+    } else {
         myVideo.pause(); 
+        document.getElementById("playpause").innerText = "PLAY";
+    }
 } 
 
 function makeBig() { 
