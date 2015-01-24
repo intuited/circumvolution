@@ -1,4 +1,7 @@
 "use strict";
+/*  Copyright Ted Tibbetts 2015.  Licensed under the GPL.
+    See file COPYING for details.
+    */
 
 /*  View: encapsulates viewing of a loop, full clip, or still image.
     Constructor defines helper functions and sets callbacks
