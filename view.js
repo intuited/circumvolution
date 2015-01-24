@@ -53,9 +53,14 @@ function View(playButton, seekButton,
             view.loopButton.innerText = "Loop";
         } else {
             view.setLoop(view.loopStartInput.value, view.loopEndInput.value);
+            view.startLoop();
             view.loopButton.innerText = "End Loop";
         }
     };
+    this.loopStartInput.onchange = this.loopEndInput.onchange = function () {
+        view.setLoop(view.loopStartInput.value, view.loopEndInput.value);
+    }
+
 
     this.speedInput.onchange = function () {
         view.setPlaybackSpeed(view.speedInput.value);
@@ -69,13 +74,14 @@ function View(playButton, seekButton,
     this.setLoop = function (loopstart, loopend) {
         this.loop.start = loopstart;
         this.loop.end = loopend;
+    };
+
+    this.startLoop = function () {
         this.loop.active = true;
     };
 
     this.endLoop = function () {
         this.loop.active = false;
-        this.loop.start = null;
-        this.loop.end = null;
     };
 
     this.setPlaybackSpeed = function (playbackSpeed) {
