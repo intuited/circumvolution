@@ -58,15 +58,26 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
         this.video.playbackRate = playbackSpeed;
     };
 
+    this.parseYoutubeHash = function (url) {
+        // Returns the YouTube hash (value of the `v` param)
+        // TODO: implement proper parsing using a URL parsing library
+        var match = url.match(/[^a-zA-Z]v=[0-9a-zA-Z]*/);
+        if (match) {
+            return match[0].substr(3);
+        } else {
+            alert("Invalid Youtube URL.");
+        }
+    };
+
     this.MP4FetchMethods = {
         "youtubeinmp4": function (url) {
-            // for now, just return the URL for the TT prereqs
-            return "http://www.youtubeinmp4.com/redirect.php?video=2Tjp0mRb4XA";
-        },
+            return "http://www.youtubeinmp4.com/redirect.php?video="
+                + this.parseYoutubeHash(url);
+        }.bind(this),
         "localfile": function (url) {
             // This is just implemented for the TT prereqs, as a debug option
             return "Acropedia Teacher Training Prereqs.mp4";
-        }
+        }.bind(this)
     };
 
     this.getMP4URL = function (url) {
@@ -122,6 +133,9 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
     this.speedInput.onchange = function () {
         view.setPlaybackSpeed(view.speedInput.value);
     };
+
+    /* SETUP CODE ******
+    */
 
     this.setVideoURL();
 }
