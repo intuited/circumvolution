@@ -3,9 +3,11 @@
 <body> 
 
 <div style="text-align:center"> 
+  Youtube URL: <input id="url" type="text" value="https://www.youtube.com/watch?v=2Tjp0mRb4XA"></br>
+  MP4 source: <form action=""><input id="youtubeinmp4" name="mp4source" type="radio">Youtubeinmp4<input id="localfile" type="radio" name="mp4source" checked="checked">Local file</form>
   <button id="playbutton">PLAY</button> 
   <button id="seekbutton">Seek to 30 seconds</button>
-  <button id="loopbutton">Loop</button> from <input type="text" id="loopstart" value="36"> to <input type="text" id="loopend" value="40.2">
+  <button id="loopbutton">Loop</button> from <input type="text" id="loopstart" value="36"> to <input type="text" id="loopend" value="40.4">
   Playback speed: <input type="text" id="speedinput" value="1.0">
   <br> 
   <video id="video" width="720">
@@ -17,7 +19,10 @@
 
 <script src="view.js"></script> 
 <script>
-var view = new View(document.getElementById("playbutton"),
+var view = new View(document.getElementById("url"),
+                    document.getElementById("youtubeinmp4"),
+                    document.getElementById("localfile"),
+                    document.getElementById("playbutton"),
                     document.getElementById("seekbutton"),
                     document.getElementById("loopbutton"),
                     document.getElementById("loopstart"),
