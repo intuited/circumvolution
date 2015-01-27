@@ -88,6 +88,18 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
     };
     this.setVideoURL = function () {
         this.video.src = this.getMP4URL(this.youtubeURL.value);
+        // TODO: encapsulate this
+        this.loop.active = false;
+        this.loopButton.innerText = "Loop";
+
+        // not sure if setting the video URL changes paused state.
+        // keep the button synchronized with the possibly changing state.
+        // TODO: encapsulate this
+        if (this.video.paused) {
+            this.playButton.innerText = "PLAY";
+        } else {
+            this.playButton.innerText = "PAUSE";
+        }
     };
 
     /* HANDLERS ******
@@ -95,7 +107,7 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
 
     // Update the video URL whenever the source Youtube URL
     //  or the mp4 source changes
-    this.useYoutubeInMP4.onchange = this.useLocalFile
+    this.useYoutubeInMP4.onchange = this.useLocalFile.onchange
         = this.youtubeURL.onchange = this.setVideoURL.bind(this);
 
     this.playButton.onclick = function () {
