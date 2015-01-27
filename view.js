@@ -121,7 +121,7 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
         }
     };
 
-    this.seekButton.onclick = function () { view.seek(30); };
+    this.seekButton.onclick = function () { view.seek(30.6); };
 
     this.currentTimeInput.onchange = function () {
         this.seek(this.currentTimeInput.value);
