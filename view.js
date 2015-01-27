@@ -92,6 +92,7 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
         // TODO: encapsulate this
         this.loop.active = false;
         this.loopButton.innerText = "Loop";
+        this.currentTimeInput.value = 0;
 
         // not sure if setting the video URL changes paused state.
         // keep the button synchronized with the possibly changing state.
