@@ -8,7 +8,7 @@
     on the DOM elements passed to it.
     */
 function View(youtubeURL, useYoutubeInMP4, useLocalFile,
-              playButton, seekButton,
+              playButton, seekButton, currentTimeInput,
               loopButton, loopStartInput, loopEndInput,
               speedInput,
               video) {
@@ -17,6 +17,7 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
     this.useLocalFile = useLocalFile;
     this.playButton = playButton;
     this.seekButton = seekButton;
+    this.currentTimeInput = currentTimeInput;
     this.loopButton = loopButton;
     this.loopStartInput = loopStartInput;
     this.loopEndInput = loopEndInput;
@@ -122,7 +123,12 @@ function View(youtubeURL, useYoutubeInMP4, useLocalFile,
 
     this.seekButton.onclick = function () { view.seek(30); };
 
+    this.currentTimeInput.onchange = function () {
+        this.seek(this.currentTimeInput.value);
+    }.bind(this);
+
     this.video.ontimeupdate = function () {
+        view.currentTimeInput.value = view.video.currentTime;
         if (view.loop.active && view.video.currentTime >= view.loop.end) {
             view.video.currentTime = view.loop.start;
         }
