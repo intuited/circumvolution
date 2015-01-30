@@ -3,10 +3,293 @@
     See file COPYING for details.
     */
 
+/* Helper entities
+*/
+
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
+
+function ParseError(message) {
+    this.message = message;
+    this.stack = (new Error()).stack;
+}
+ParseError.prototype = Object.create(Error.prototype);
+ParseError.prototype.name = "ParseError";
+
+parseYoutubeHash = function (url) {
+    // Returns the YouTube hash (value of the `v` param)
+    // TODO: implement proper parsing using a URL parsing library
+    var match = url.match(/[^a-zA-Z]v=[0-9a-zA-Z]*/);
+    if (match) {
+        return match[0].substr(3);
+    } else {
+        throw ParseError("Invalid Youtube URL.");
+    }
+};
+
+/*  toggleButton: handles toggling a button between enabled and disabled states.
+    Extends the button node returned by document.createElement,
+        adding setState(), toggle(), and enabled
+    `onenable` and `ondisable` handlers are called when the state changes.
+    */
+function toggleButton(button, enabledText, disabledText, enabled) {
+    button.onenable = button.ondisable = undefined;
+
+    button.setState = function (enabled) {
+        this.enabled = enabled;
+        if (enabled) {
+            this.innerText = enabledText;
+            if (this.onenable) {
+                this.onenable();
+            }
+        } else {
+            if (this.ondisable) {
+                this.ondisable();
+            }
+            this.innerText = disabledText;
+        }
+    },
+    button.toggle = function () {
+        if (this.enabled) {
+            this.setState(false);
+        } else {
+            this.setState(true);
+        }
+    }
+
+    button.setState(enabled);
+    button.onclick = button.toggle.bind(button);
+
+    return button;
+};
+
 /*  View: encapsulates viewing of a loop, full clip, or still image.
     Constructor defines helper functions and sets callbacks
     on the DOM elements passed to it.
     */
+function View() {
+
+}
+
+View.prototype = {
+    controls: {};
+
+    defaults: {
+        source_url: "https://www.youtube.com/watch?v=2Tjp0mRb4XA",
+        mp4source: "youtubeinmp4",
+        paused: false,
+        loop_enabled: false,
+        loopstart: "36", loopend: "40.4",
+        playback_speed: "1.0",
+        current_time: "30",
+        video_width: "720"
+    },
+
+    /*  Creates controls for the view.
+        Static method (doesn't use `this`).
+        `parentEl`: the DOM element under which the controls are created.
+        Return: object containing the control nodes for the view.
+        */
+    createControls: function(parentEl) {
+        var controls;
+
+        function createTextElement(text) {
+            var newElement = parentEl.ownerDocument.createTextElement(text);
+            parentEl.appendNode(newElement);
+            return newElement;
+        };
+        function createChildElement(parentEl, type) {
+            var newElement = parentEl.ownerDocument.createElement(type);
+            parentEl.appendNode(newElement);
+            return newElement;
+        };
+        var createElement = createChildElement.bind(undefined, parentEl);
+        function createOptionElement(selectElement, value, text) {
+            var newElement = createChildElement(selectElement, "option");
+            newElement.value = value;
+            newElement.innerText = text;
+            return newElement;
+        };
+        function createButtonElement(label) {
+            var newElement = createElement("button");
+            newElement.innerText = label;
+            return newElement;
+        };
+
+        createTextElement("Youtube URL:");
+        controls.sourceURL = createElement("input");
+        createElement("br");
+        createTextElement("MP4 Source:");
+        controls.mp4Source = createElement("select");
+        createOptionElement(controls.mp4Source, "youtubeinmp4",
+            "Youtubeinmp4 (expect loading delays)");
+        createOptionElement(controls.mp4Source, "localfile",
+            "Local file (debug only)");
+        // TODO: some redundancy to kill here
+        controls.playButton = toggleButton(createButtonElement("PLAY"),
+            "PAUSE", "PLAY", false);
+        controls.loopButton = toggleButton(createButtonElement("Loop"),
+            "End loop", "Loop", false);
+        createTextElement("from");
+        controls.loopStartInput = createElement("input");
+        createTextElement("to");
+        controls.loopEndInput = createElement("input");
+        createElement("br");
+        createTextElement("Playback speed:");
+        controls.speedInput = createElement("input");
+        createTextElement("Current time:");
+        controls.currentTimeInput = createElement("input");
+        // TODO: set Video url
+        controls.video = createElement("video");
+
+        return controls;
+    },
+
+    /*  Configures the view's control elements.
+        Changes to control elements are not necessarily propagated
+        to video behaviour; call applyControlsToVideo() to do that.
+        `params`: parsed query string parameters.
+    */
+    configureControls: function (controls, params) {
+        for (var param in params) {
+            if (params.hasOwnProperty(param)) {
+                switch (param) {
+                    case "source_url":
+                        controls.video.src = params[param]; break;
+                    case "mp4source":
+                        controls.mp4source.value = params[param]; break;
+                    case "paused":
+                        // TODO: make sure this doesn't trigger something
+                        //       if that is important
+                        controls.playButton.setValue(!params[param]); break;
+                    case "loop_enabled":
+                        controls.loopButton.setValue(params[param]); break;
+                    case "loopstart":
+                        controls.loopStartInput.value = params[param]; break;
+                    case "loopend":
+                        controls.loopEndInput.value = params[param]; break;
+                    case "playback_speed":
+                        controls.speedInput.value = params[param]; break;
+                    case "current_time":
+                        controls.currentTimeInput.value = params[param]; break;
+                    case "video_width":
+                        controls.video.width = params[param]; break;
+                };
+            };
+        };
+
+        return controls;
+    },
+
+    setEventHandlers: function (controls) {
+        controls.sourceURL.onchange = function () {
+            // Reset the video to defaults but keep the mp4source setting.
+            this.updateVideoURL();
+            var controlSettings = clone(this.defaults);
+            delete controlSettings.mp4source;
+            this.configureControls(controls, controlSettings);
+            this.applyControlsToVideo();
+        }.bind(this);
+
+        controls.mp4Source.onchange = function() {
+            // Keep all settings the same.
+            // I think this requires applying them to the new video.
+            this.applyControlsToVideo(controls);
+        }.bind(this);
+
+        controls.playButton.onenable = function () {
+            controls.video.paused = false;
+        };
+        controls.playButton.ondisable = function () {
+            controls.video.paused = true;
+        };
+
+        // loopButton doesn't need event handlers
+        // ( other than that registered by toggleButton() )
+        // because we just check its state in currentTimeInput.onchange()
+
+        controls.speedInput.onchange = function () {
+            controls.video.setPlaybackSpeed(controls.speedInput.value);
+        };
+
+        controls.currentTimeInput.onchange = function () {
+            controls.video.currentTime = controls.currentTimeInput.value;
+        };
+
+        controls.video.ontimeupdate = function () {
+            var loopEnabled = controls.loopButton.enabled;
+            var loopStartTime = controls.loopStartInput.value;
+            var currentTime = controls.video.currentTime;
+            var loopEndTime = controls.loopEndInput.value;
+
+            if (loopEnabled && currentTime >= loopEndTime) {
+                controls.video.currentTime = loopStartTime;
+            }
+
+            controls.currentTimeInput.value = controls.video.currentTime;
+        };
+    },
+
+    /*  Updates the URL of the video control
+        based on the source URL and the mp4 source.
+        */
+    updateVideoURL: function () {
+        var newVideoURL;
+        switch (controls.mp4source.value) {
+            "youtubeinmp4":
+                newVideoURL = "http://www.youtubeinmp4.com/redirect.php?video="
+                    + parseYoutubeHash(controls.sourceURL.value);
+                break;
+            "localfile":
+                newVideoURL = "Acropedia Teacher Training Prereqs.mp4";
+                break;
+        };
+        video.src = newVideoURL;
+    },
+
+    /*  Resets the controls to defaults.
+        This doesn't propagate changes to the video.
+        */
+    resetControls: function (controls) {
+        this.configureControls(controls, this.defaults)
+    },
+
+    /*  Sets properties of the video control
+        to reflect settings of the other controls.
+        Sets the URL first; this should allow the values of the other controls
+        - current time, playback speed, etc. - to be applied to the new video.
+        */
+    applyControlsToVideo: function(controls) {
+        var video = controls.video;
+
+        // Save values of controls prior to changing video src property.
+        // This is in case loading of the new video triggers events
+        // - e.g. timeupdate -
+        // whose handlers change control values.
+        var playbackSpeed = controls.speedInput.value;
+        var currentTime = controls.currentTimeInput.value;
+        var paused = !controls.playButton.enabled;
+
+        video.paused = true;
+        this.updateVideoURL();
+        // TODO: insert delay here?
+
+        // loops are implemented via our event handlers,
+        // so nothing needs to be done here for that
+        video.playbackSpeed = playbackSpeed;
+        video.currentTime = currentTime;
+        video.paused = paused;
+    }
+};
+
+////////////////////
+
 function View(youtubeURL, useYoutubeInMP4, useLocalFile,
               playButton, seekButton, currentTimeInput,
               loopButton, loopStartInput, loopEndInput,

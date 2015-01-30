@@ -2,7 +2,7 @@
 <html> 
 <body> 
 
-<div style="text-align:center"> 
+<div id="view-control" style="text-align:center"> 
   Youtube URL: <input id="url" type="text" value="https://www.youtube.com/watch?v=2Tjp0mRb4XA"></br>
   MP4 source: <form action=""><input id="youtubeinmp4" name="mp4source" type="radio" checked="checked">Youtubeinmp4 (expect loading delays)<input id="localfile" type="radio" name="mp4source">Local file (debug only)</form>
   <button id="playbutton">PLAY</button> 
@@ -20,17 +20,10 @@
 
 <script src="view.js"></script> 
 <script>
-var view = new View(document.getElementById("url"),
-                    document.getElementById("youtubeinmp4"),
-                    document.getElementById("localfile"),
-                    document.getElementById("playbutton"),
-                    document.getElementById("seekbutton"),
-                    document.getElementById("currenttimeinput"),
-                    document.getElementById("loopbutton"),
-                    document.getElementById("loopstart"),
-                    document.getElementById("loopend"),
-                    document.getElementById("speedinput"),
-                    document.getElementById("video") )
+var view = new View();
+view.configureControls(
+    view.createControls(document.getElementById("view-control")),
+                        view.defaults);
 </script>
 
 </body> 
