@@ -27,9 +27,12 @@ ParseError.prototype.name = "ParseError";
 function parseYoutubeHash(url) {
     // Returns the YouTube hash (value of the `v` param)
     // TODO: implement proper parsing using a URL parsing library
-    var match = url.match(/[^a-zA-Z]v=[0-9a-zA-Z]*/);
-    if (match) { return match[0].substr(3); }
-    throw new ParseError("Invalid Youtube URL.");
+    var e, parsedQueryString = URI.parseQuery(URI.parse(url).query);
+    try {
+        return parsedQueryString.v;
+    } catch (e) {
+        throw new ParseError("Invalid Youtube URL.");
+    }
 }
 
 /*  toggleButton: handles toggling a button between enabled and disabled states.
@@ -145,6 +148,11 @@ View.prototype = {
         createElement("br");
         // TODO: set Video url
         controls.video = createElement("video");
+        createElement("br");
+        controls.generateURLButton = createElement("button");
+        controls.generateURLButton.innerText = "Generate URL for current settings";
+        controls.generatedURL = createElement("input");
+        controls.generatedURL.size = 100;
 
         this.controls = controls;
         return this;
@@ -246,6 +254,22 @@ View.prototype = {
             }
 
             controls.currentTimeInput.value = controls.video.currentTime;
+        };
+
+        controls.generateURLButton.onclick = function () {
+            var url = URI(controls.video.ownerDocument.documentURI);
+            url.query({
+                "source_url": controls.sourceURL.value,
+                "mp4source": controls.mp4Source.value,
+                "paused": !controls.playButton.enabled,
+                "loop_enabled": controls.loopButton.enabled,
+                "loopstart": controls.loopStartInput.value,
+                "loopend": controls.loopEndInput.value,
+                "playback_speed": controls.speedInput.value,
+                "current_time": controls.currentTimeInput.value,
+                "video_width": controls.video.width
+            });
+            controls.generatedURL.value = url;
         };
 
         return this;
