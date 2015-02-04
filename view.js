@@ -75,7 +75,23 @@ function toggleButton(button, enabledText, disabledText, enabled) {
     Constructor defines helper functions and sets callbacks
     on the DOM elements passed to it.
     */
-function View() { return this; }
+function View(parentEl, options) {
+    var option;
+
+    for (option in this.defaults) {
+        if (this.defaults.hasOwnProperty(option)) {
+            if (!(option in options)) {
+                options[option] = this.defaults[option];
+            }
+        }
+    }
+
+    this.createControls(parentEl)
+    this.configureControls(options)
+    this.applyControlsToVideo()
+    this.setEventHandlers();
+    return this;
+}
 
 View.prototype = {
     defaults: {
@@ -179,10 +195,10 @@ View.prototype = {
                 case "paused":
                     // TODO: make sure this doesn't trigger something
                     //       if that is important
-                    controls.playButton.setState(!params[param]);
+                    controls.playButton.setState(!Number(params[param]));
                     break;
                 case "loop_enabled":
-                    controls.loopButton.setState(params[param]);
+                    controls.loopButton.setState(Number(params[param]));
                     break;
                 case "loopstart":
                     controls.loopStartInput.value = params[param];
@@ -214,6 +230,7 @@ View.prototype = {
             this.updateVideoURL();
             var controlSettings = clone(this.defaults);
             delete controlSettings.mp4source;
+            delete controlSettings.source_url;
             this.configureControls(controlSettings);
             this.applyControlsToVideo();
         }.bind(this);
@@ -261,8 +278,8 @@ View.prototype = {
             url.query({
                 "source_url": controls.sourceURL.value,
                 "mp4source": controls.mp4Source.value,
-                "paused": !controls.playButton.enabled,
-                "loop_enabled": controls.loopButton.enabled,
+                "paused": Number(!controls.playButton.enabled),
+                "loop_enabled": Number(controls.loopButton.enabled),
                 "loopstart": controls.loopStartInput.value,
                 "loopend": controls.loopEndInput.value,
                 "playback_speed": controls.speedInput.value,
@@ -290,6 +307,7 @@ View.prototype = {
         case "localfile":
             newVideoURL = "Acropedia Teacher Training Prereqs.mp4";
             break;
+        // TODO: add default case
         }
         controls.video.src = newVideoURL;
 

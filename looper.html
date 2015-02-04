@@ -9,11 +9,8 @@
 <script src="URI.js"></script>
 <script src="view.js"></script>
 <script>
-var view = new View();
-view.createControls(document.getElementById("view-control"))
-    .configureControls(view.defaults)
-    .applyControlsToVideo()
-    .setEventHandlers();
+var options = URI.parseQuery(URI.parse(document.documentURI).query);
+var view = new View(document.getElementById("view-control"), options);
 </script>
 
 </body> 
