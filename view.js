@@ -139,6 +139,7 @@ View.prototype = {
 
         createTextElement("Youtube URL:");
         controls.sourceURL = createElement("input");
+        controls.sourceURL.size = 60;
         createElement("br");
         createTextElement("MP4 Source:");
         controls.mp4Source = createElement("select");
