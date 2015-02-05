@@ -2,15 +2,43 @@
 <html> 
 <body> 
 
-<div id="view-control" style="text-align:center"> 
-  <!-- Javascript will add controls here. -->
-</div> 
-
 <script src="URI.js"></script>
 <script src="view.js"></script>
 <script>
-var options = URI.parseQuery(URI.parse(document.documentURI).query);
-var view = new View(document.getElementById("view-control"), options);
+function isEmpty(obj) {
+  var p;
+  for (p in obj) {
+    if (obj.hasOwnProperty(p)) { return false; }
+  }
+  return true;
+}
+
+var url = URI(document.documentURI);
+var options = URI.parseQuery(url.query());
+var bodyEl = document.getElementsByTagName("body")[0];
+if (isEmpty(options)) {
+  var messageEl = document.createElement("div");
+  var barrelRolls = url.clone();
+  barrelRolls.query({
+    source_url: "https://www.youtube.com/watch?v=2Tjp0mRb4XA",
+    mp4source: "youtubeinmp4",
+    loop_enabled: 1,
+    loopstart: 36,
+    loopend: 40.4,
+    paused: 0,
+    playback_speed: 1
+  });
+  bodyEl.appendChild(messageEl);
+  bodyEl.innerHTML =
+    "With no query string parameters (i.e. nothing after the final '/'), "
+    + "this screen is displayed.<br>"
+    + "Some examples:</br>"
+    + "<a href=\"" + barrelRolls + "\">Barrel Rolls</a>";
+} else {
+  var viewEl = document.createElement("div");
+  bodyEl.appendChild(viewEl);
+  var view = new View(viewEl, options);
+}
 </script>
 
 </body> 

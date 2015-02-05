@@ -78,6 +78,7 @@ function toggleButton(button, enabledText, disabledText, enabled) {
 function View(parentEl, options) {
     var option;
 
+    // merge in the default options in place of any missing ones
     for (option in this.defaults) {
         if (this.defaults.hasOwnProperty(option)) {
             if (!(option in options)) {
@@ -97,12 +98,12 @@ View.prototype = {
     defaults: {
         source_url: "https://www.youtube.com/watch?v=2Tjp0mRb4XA",
         mp4source: "youtubeinmp4",
-        paused: false,
+        paused: true,
         loop_enabled: false,
-        loopstart: "36",
-        loopend: "40.4",
+        loopstart: "0",
+        loopend: "0",
         playback_speed: "1.0",
-        current_time: "30.6",
+        current_time: "0",
         video_width: "720"
     },
 
