@@ -30,10 +30,19 @@ if (isEmpty(options)) {
   });
   bodyEl.appendChild(messageEl);
   bodyEl.innerHTML =
-    "With no query string parameters (i.e. nothing after the final '/'), "
-    + "this screen is displayed.<br>"
+    "<h1><pre>CIRCUMVOLUTION</pre></h1>"
+    + "<h3>Elucidate movement and other performance "
+    + "with parametrizable video clips.</h3>"
+    + "With no query string parameters in the URL (i.e. no '?...=...'), "
+    + "this screen is displayed.<br><br>"
     + "Some examples:</br>"
-    + "<a href=\"" + barrelRolls + "\">Barrel Rolls</a>";
+    + "<a href=\"" + barrelRolls + "\">Barrel Rolls</a>"
+    + "<br><br>"
+    + "Please send suggestions, comments, praise, and scurrilities "
+    + "to (ted at circulated dot ca) "
+    + "or open an issue at the "
+    + "<a href=\"https://github.com/intuited/circumvolution\">"
+    + "development page</a>."
 } else {
   var viewEl = document.createElement("div");
   bodyEl.appendChild(viewEl);
