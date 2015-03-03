@@ -146,7 +146,7 @@ View.prototype = {
             return newElement;
         }
 
-        createTextElement("Youtube hash (characters between \"v=\" and \"&\" in Youtube URL:");
+        createTextElement("Youtube hash (characters between \"v=\" and \"&\" in Youtube URL):");
         controls.hash = createElement("input");
         controls.hash.size = 16;
         createElement("br");
