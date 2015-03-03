@@ -18,26 +18,41 @@ var options = URI.parseQuery(url.query());
 var bodyEl = document.getElementsByTagName("body")[0];
 if (isEmpty(options)) {
   var messageEl = document.createElement("div");
-  var barrelRolls = url.clone();
-  barrelRolls.query({
-    source_url: "https://www.youtube.com/watch?v=2Tjp0mRb4XA",
+  // Some example URLs
+  var barrelRolls = url.clone().query({
+    hash: "2Tjp0mRb4XA",
     mp4source: "youtubeinmp4",
     loop_enabled: 1,
+    current_time: 30,
     loopstart: 36,
     loopend: 40.4,
     paused: 0,
     playback_speed: 1
   });
+  var halfSpeedBarrelRolls = url.clone().query({
+    hash: "2Tjp0mRb4XA",
+    mp4source: "youtubeinmp4",
+    loop_enabled: 1,
+    current_time: 30,
+    loopstart: 36,
+    loopend: 40.4,
+    paused: 0,
+    playback_speed: 0.5
+  });
   bodyEl.appendChild(messageEl);
   bodyEl.innerHTML =
     "<h1><pre>CIRCUMVOLUTION</pre></h1>"
     + "<h3>Elucidate movement and other performance "
-    + "with parametrizable video clips.</h3>"
-    + "With no query string parameters in the URL (i.e. no '?...=...'), "
+    + "with parametrizable video loops.</h3>"
+    + "With no query string parameters in the URL (i.e. nothing after the question mark),"
     + "this screen is displayed.<br><br>"
-    + "Some examples:</br>"
-    + "<a href=\"" + barrelRolls + "\">Barrel Rolls</a>"
-    + "<br><br>"
+    + "Some examples:<br>"
+    + "<a href=\"" + barrelRolls + "\">Barrel Rolls</a><br>"
+    + "<a href=\"" + halfSpeedBarrelRolls + "\">Half Speed Barrel Rolls</a><br>"
+    + "<br>"
+    + "Note that it may take some time for the videos to load.  Please be patient.<br><br>"
+    + "The current version of <em>Circumvolution</em> is a rough draft; interface and functionality are subject to change.<br>"
+    + "Being mindful of this, feel free to share links to loops (\"circumvolutions\") you have created.<br><br>"
     + "Please send suggestions, comments, praise, and scurrilities "
     + "to (ted at circulated dot ca) "
     + "or open an issue at the "

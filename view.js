@@ -24,6 +24,14 @@ function ParseError(message) {
 ParseError.prototype = Object.create(Error.prototype);
 ParseError.prototype.name = "ParseError";
 
+/*  parseYoutubeHash(url)
+Parses hash from YouTube URL using URI.js.
+No longer needed as we're now requiring users to do this themselves.
+This is because the web host has weird issues with URLs being passed
+as query string parameters that I don't want to deal with.
+A different workaround seems to be to just remove the "http://"
+(or even just the h) from the beginning of the passed URLs.
+*/
 function parseYoutubeHash(url) {
     // Returns the YouTube hash (value of the `v` param)
     // TODO: implement proper parsing using a URL parsing library
@@ -96,7 +104,7 @@ function View(parentEl, options) {
 
 View.prototype = {
     defaults: {
-        source_url: "https://www.youtube.com/watch?v=2Tjp0mRb4XA",
+        hash: "2Tjp0mRb4XA",
         mp4source: "youtubeinmp4",
         paused: true,
         loop_enabled: false,
@@ -138,9 +146,9 @@ View.prototype = {
             return newElement;
         }
 
-        createTextElement("Youtube URL:");
-        controls.sourceURL = createElement("input");
-        controls.sourceURL.size = 60;
+        createTextElement("Youtube hash (characters between \"v=\" and \"&\" in Youtube URL:");
+        controls.hash = createElement("input");
+        controls.hash.size = 16;
         createElement("br");
         createTextElement("MP4 Source:");
         controls.mp4Source = createElement("select");
@@ -188,8 +196,8 @@ View.prototype = {
         for (param in params) {
             if (params.hasOwnProperty(param)) {
                 switch (param) {
-                case "source_url":
-                    controls.sourceURL.value = params[param];
+                case "hash":
+                    controls.hash.value = params[param];
                     break;
                 case "mp4source":
                     controls.mp4Source.value = params[param];
@@ -227,12 +235,12 @@ View.prototype = {
     setEventHandlers: function () {
         var controls = this.controls;
 
-        controls.sourceURL.onchange = function () {
+        controls.hash.onchange = function () {
             // Reset the video to defaults but keep the mp4source setting.
             this.updateVideoURL();
             var controlSettings = clone(this.defaults);
             delete controlSettings.mp4source;
-            delete controlSettings.source_url;
+            delete controlSettings.hash;
             this.configureControls(controlSettings);
             this.applyControlsToVideo();
         }.bind(this);
@@ -278,7 +286,7 @@ View.prototype = {
         controls.generateURLButton.onclick = function () {
             var url = URI(controls.video.ownerDocument.documentURI);
             url.query({
-                "source_url": controls.sourceURL.value,
+                "hash": controls.hash.value,
                 "mp4source": controls.mp4Source.value,
                 "paused": Number(!controls.playButton.enabled),
                 "loop_enabled": Number(controls.loopButton.enabled),
@@ -304,7 +312,7 @@ View.prototype = {
         switch (controls.mp4Source.value) {
         case "youtubeinmp4":
             newVideoURL = "http://www.youtubeinmp4.com/redirect.php?video="
-                + parseYoutubeHash(controls.sourceURL.value);
+                + controls.hash.value;
             break;
         case "localfile":
             newVideoURL = "Acropedia Teacher Training Prereqs.mp4";
