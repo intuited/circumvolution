@@ -172,6 +172,8 @@ View.prototype = {
         createTextElement("Current time:");
         controls.currentTimeInput = createElement("input");
         createElement("br");
+        controls.fullscreenButton = createButtonElement("Full Screen (experimental)");
+        createElement("br");
         // TODO: set Video url
         controls.video = createElement("video");
         createElement("br");
@@ -268,6 +270,16 @@ View.prototype = {
 
         controls.currentTimeInput.onchange = function () {
             controls.video.currentTime = controls.currentTimeInput.value;
+        };
+
+        controls.fullscreenButton.onclick = function() {
+            if (controls.video.requestFullscreen) {
+              controls.video.requestFullscreen();
+            } else if (controls.video.mozRequestFullScreen) {
+              controls.video.mozRequestFullScreen();
+            } else if (controls.video.webkitRequestFullscreen) {
+              controls.video.webkitRequestFullscreen();
+            }
         };
 
         controls.video.ontimeupdate = function () {
